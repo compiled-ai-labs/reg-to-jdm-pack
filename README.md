@@ -63,11 +63,11 @@ This prints a `fail` for `1026.19(f)(1)(ii)(A)/r1` and an empty list for the tim
 
 1. Open https://editor.gorules.io and open `out/pack/rules.jdm.json`.
 2. Open the simulator and paste the `input` object of a fixture, for example `fixtures/trid-19f/cd-received-saturday-closing-after-columbus-day.json`.
-3. Run. All nodes evaluate. For the Columbus Day fixture the result has `derived.cd_receipt_date` `"2026-10-10"`, `results.s1026_19_f_1_ii_A` `[{"rule_id": "1026.19(f)(1)(ii)(A)/r1", "result": "fail"}]` and `results.s1026_19_f_1_ii_B` `[]`.
+3. Run. All nodes evaluate. For the Columbus Day fixture the result has `derived.cd_receipt_date` `"2026-10-10"`, `results.s1026_19_f_1_ii_A` `[{"rule_id": "1026.19(f)(1)(ii)(A)/r1", "result": "fail"}]`. The timeshare table matches no row; the editor leaves its key out of `results`, where the Python SDK returns an empty list.
 
-![The pack in the GoRules editor simulator: the Columbus Day fixture as nested input, every node evaluated, and the business-day list without Sunday 2026-10-11 and Columbus Day 2026-10-12](docs/editor-simulator.png)
+![The pack in the GoRules editor simulator: the Columbus Day fixture as nested input, every node evaluated, receipt date 2026-10-10 and a fail from rule 1026.19(f)(1)(ii)(A)/r1](docs/editor-simulator.png)
 
-*editor.gorules.io, 2026-10-08: the Columbus Day fixture. Every node evaluated; the output starts with the derived business days, which skip Sunday 2026-10-11 and Columbus Day 2026-10-12.*
+*editor.gorules.io, 2026-10-08: the Columbus Day fixture. Every node evaluated. The output shows the receipt date 2026-10-10 and a fail from rule 1026.19(f)(1)(ii)(A)/r1.*
 
 ## Using this pack
 
