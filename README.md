@@ -47,13 +47,23 @@ uv run reg-to-jdm readback
 uv run pytest
 ```
 
-Load the JDM into zen-engine:
+Load the JDM into zen-engine. The input is a nested object; the GoRules editor and all SDKs take nested objects, and flat keys such as `"cd.issue_date"` are not resolved.
 
 ```python
-import json, zen
+import zen
 decision = zen.ZenEngine().create_decision(open("out/pack/rules.jdm.json").read())
-print(decision.evaluate(json.load(open("out/pack/tests/fixture-cd-received-friday-closing-monday.json"))["input"])["result"]["results"])
+loan = {"cd": {"issue_date": "2026-10-14", "delivery_method": "in_person", "received_date": "2026-10-16", "mailed_date": None},
+        "closing_date": "2026-10-19", "transaction": {"timeshare": False}, "calendar": {"holidays": ["2026-10-12"]}}
+print(decision.evaluate(loan)["result"]["results"])
 ```
+
+This prints a `fail` for `1026.19(f)(1)(ii)(A)/r1` and an empty list for the timeshare table.
+
+### Open in the GoRules editor
+
+1. Open https://editor.gorules.io and open `out/pack/rules.jdm.json`.
+2. Open the simulator and paste the `input` object of a fixture, for example `fixtures/trid-19f/cd-received-saturday-closing-after-columbus-day.json`.
+3. Run. All nodes evaluate. For the Columbus Day fixture the result has `derived.cd_receipt_date` `"2026-10-10"`, `results.s1026_19_f_1_ii_A` `[{"rule_id": "1026.19(f)(1)(ii)(A)/r1", "result": "fail"}]` and `results.s1026_19_f_1_ii_B` `[]`.
 
 ## Using this pack
 

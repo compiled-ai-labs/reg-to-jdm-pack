@@ -6,6 +6,7 @@
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), used through a chat session on 2026-10-07, with no API call.
 - Analyst: the answers in `out/pack/answers.yaml` were drafted by the same Claude session and reviewed and accepted by Boris Teplitsky on 2026-10-07, as recorded in `answered_by`.
 - Two passes: the first with the original vocabulary (three questions, two rules blocked; kept in `examples/trid-19f-first-pass/`), the second after the answers and the vocabulary change. Every record passed the gates on its first attempt in both passes.
+- GoRules editor: the pack was loaded and simulated in editor.gorules.io on 2026-10-08. All nodes evaluated, including the map over an interval in the business-days node.
 
 ## Assumptions
 
@@ -35,4 +36,5 @@
 10. A cell expression that raises an error makes its row not match, with no error in the result. The docs do not mention this. `verify` evaluates every cell of the rows under test and fails on an error.
 11. The dates page shows `d(x).weekday() in [1..5]` as a "business days check". It excludes Saturday and knows no holidays, so it does not fit Regulation Z.
 12. `inputNode.content.schema` is documented as an optional JSON Schema string, but not whether the Python engine enforces it. It is left empty.
-13. Loading into the GoRules editor or BRMS: the standard page describes exporting JDM from BRMS, not importing. Not tested here; the Python SDK load is tested.
+13. Loading into the GoRules editor or BRMS: the standard page describes exporting JDM from BRMS, not importing. The pack loads in editor.gorules.io (see Provenance); BRMS import is not tested.
+14. Inputs are nested objects. The docs show nested paths in fields and expressions but do not say that a flat dotted key in the input is stored as a literal key that expressions do not resolve: `{"cd.issue_date": ...}` is not `cd.issue_date`. Confirmed in the web editor on 2026-10-08, where the first expression node returned null; zen-engine 2.1.2 in Python stops with an error in the same node. Fixtures and test cases are nested and reach the engine as written.

@@ -3,17 +3,23 @@
   "subsection": "1026.19(f)(1)(ii)(A)",
   "expected": "fail",
   "input": {
-    "cd.issue_date": "2026-10-09",
-    "cd.delivery_method": "in_person",
-    "cd.received_date": "2026-10-10",
-    "cd.mailed_date": null,
+    "cd": {
+      "issue_date": "2026-10-09",
+      "delivery_method": "in_person",
+      "received_date": "2026-10-10",
+      "mailed_date": null
+    },
     "closing_date": "2026-10-14",
-    "transaction.timeshare": false,
-    "calendar.holidays": [
-      "2026-10-12",
-      "2026-11-11",
-      "2026-11-26",
-      "2026-12-25"
-    ]
+    "transaction": {
+      "timeshare": false
+    },
+    "calendar": {
+      "holidays": [
+        "2026-10-12",
+        "2026-11-11",
+        "2026-11-26",
+        "2026-12-25"
+      ]
+    }
   }
 }

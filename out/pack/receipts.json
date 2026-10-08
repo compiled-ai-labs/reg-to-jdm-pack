@@ -82,7 +82,7 @@
     "name": "claude-opus-5-5",
     "provider": "chat"
   },
-  "prompt_template_sha256": "1611585f85e0d8b189b7d1e82bba1d541bf3c2bbc279ba46c109704e3a8a3c31",
+  "prompt_template_sha256": "b722282b3036afa1461187ad586d8144c9c9c62f56356808459001a61b662227",
   "rules": {
     "1026.19(f)(1)(ii)(A)/r1": {
       "applies_when": "not transaction.timeshare",
