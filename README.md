@@ -65,6 +65,10 @@ This prints a `fail` for `1026.19(f)(1)(ii)(A)/r1` and an empty list for the tim
 2. Open the simulator and paste the `input` object of a fixture, for example `fixtures/trid-19f/cd-received-saturday-closing-after-columbus-day.json`.
 3. Run. All nodes evaluate. For the Columbus Day fixture the result has `derived.cd_receipt_date` `"2026-10-10"`, `results.s1026_19_f_1_ii_A` `[{"rule_id": "1026.19(f)(1)(ii)(A)/r1", "result": "fail"}]` and `results.s1026_19_f_1_ii_B` `[]`.
 
+![The pack in the GoRules editor simulator: the Columbus Day fixture as nested input, every node evaluated, and the business-day list without Sunday 2026-10-11 and Columbus Day 2026-10-12](docs/editor-simulator.png)
+
+*editor.gorules.io, 2026-10-08: the Columbus Day fixture. Every node evaluated; the output starts with the derived business days, which skip Sunday 2026-10-11 and Columbus Day 2026-10-12.*
+
 ## Using this pack
 
 The pack is Apache 2.0. Load it into any GoRules SDK or editor, add test cases to `out/pack/tests/` in the same format (`verify` runs every file there), and supply your own holiday list with each loan file in `calendar.holidays`. A rule changed by hand no longer matches its receipt, and `verify` reports it.
