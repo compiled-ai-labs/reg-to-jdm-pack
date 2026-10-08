@@ -56,7 +56,7 @@
           {
             "id": "e1",
             "key": "derived.business_days",
-            "value": "filter(map([0..d(closing_date).add(10, \"d\").diff(d(cd.issue_date).sub(10, \"d\"), \"day\")], d(cd.issue_date).sub(10, \"d\").add(#, \"d\").format(\"%Y-%m-%d\")), d(#).weekday() != 7 and not contains(calendar.holidays, #))"
+            "value": "filter(map([0..d(closing_date, \"UTC\").add(10, \"d\").diff(d(cd.issue_date, \"UTC\").sub(10, \"d\"), \"day\")], d(cd.issue_date, \"UTC\").sub(10, \"d\").add(#, \"d\").format(\"%Y-%m-%d\")), d(#).weekday() != 7 and not contains(calendar.holidays, #))"
           }
         ],
         "inputField": null,

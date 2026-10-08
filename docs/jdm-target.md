@@ -58,12 +58,12 @@ A key with dots nests: `derived.cd_receipt_date` becomes `{"derived": {"cd_recei
 For a derived field of type `day_set`, `value` wraps the test of one day, taken from the source text, in a list of the days of a window:
 
 ```
-filter(map([0..d(<to>).add(<pad>, "d").diff(d(<from>).sub(<pad>, "d"), "day")],
-           d(<from>).sub(<pad>, "d").add(#, "d").format("%Y-%m-%d")),
+filter(map([0..d(<to>, "UTC").add(<pad>, "d").diff(d(<from>, "UTC").sub(<pad>, "d"), "day")],
+           d(<from>, "UTC").sub(<pad>, "d").add(#, "d").format("%Y-%m-%d")),
        <test of one day, # is the day>)
 ```
 
-`<from>`, `<to>` and `<pad>` come from the vocabulary (`window`), not from the source text, and have no receipt.
+`<from>`, `<to>` and `<pad>` come from the vocabulary (`window`), not from the source text, and have no receipt. The window's dates are taken in UTC (the dates page documents a time zone as the second argument of `d()`): without one, zen-engine 2.1.2 uses the machine's zone, `add(n, "d")` steps 24 hours, and across a daylight-saving change the days slip by one (NOTES.md, item 15).
 
 ### decisionTableNode
 

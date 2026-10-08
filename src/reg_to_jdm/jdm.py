@@ -44,10 +44,12 @@ def day_set_expression(window: dict, predicate: str) -> str:
 
     The window comes from the vocabulary; only the predicate comes from the source text.
     `[0..n]` iterated by map() works in zen-engine 2.1.2 but the docs show intervals only
-    in range checks (NOTES.md).
+    in range checks (NOTES.md). The window's dates are UTC: d() without a zone takes the
+    machine's zone, where add(n, "d") steps 24 hours and slips a day across a daylight-saving
+    change (NOTES.md, JDM item 15).
     """
-    start = f'd({window["from"]}).sub({window["pad_days"]}, "d")'
-    end = f'd({window["to"]}).add({window["pad_days"]}, "d")'
+    start = f'd({window["from"]}, "UTC").sub({window["pad_days"]}, "d")'
+    end = f'd({window["to"]}, "UTC").add({window["pad_days"]}, "d")'
     days = f'map([0..{end}.diff({start}, "day")], {start}.add(#, "d").format("%Y-%m-%d"))'
     return f"filter({days}, {predicate})"
 

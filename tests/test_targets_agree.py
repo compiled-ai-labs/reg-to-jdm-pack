@@ -1,10 +1,8 @@
 """Both targets give the same verdict on every test case of the committed pack: every rule's
 result, every scalar derived value, and every fixture's verdict for its paragraph.
 
-Day sets: the DMN list must be exactly the calendar window filtered by the day test. The ZEN
-list may fall short of it at the window's end and nowhere else: ZEN's d().add(n, "d") adds
-n x 24 hours in the machine's local time zone, so on a machine whose zone leaves daylight
-saving inside the window the last day(s) drop out (NOTES.md, JDM findings).
+Day sets: both lists must be the same, and exactly the calendar window filtered by the day
+test (the JDM window is taken in UTC; NOTES.md, JDM item 15).
 """
 
 import json
@@ -66,11 +64,9 @@ def test_same_verdict(engines, path):
             assert f == z, field
             continue
         window = _window(test["input"], spec.window)
-        assert f == [d for d in window if d in set(f)], "DMN day set is not in window order"
+        assert f == z, field
+        assert f == [d for d in window if d in set(f)], "day set is not in window order"
         assert set(f) <= set(window)
-        missing = [d for d in f if d not in z]
-        assert not set(z) - set(f), f"{field}: ZEN has days DMN does not"
-        assert missing == f[len(f) - len(missing):], f"{field}: differs before the window end"
     keys = set(jdm.get("results") or {}) | set(dmn.get("results") or {})
     for key in keys:
         z = sorted((e["rule_id"], e["result"]) for e in (jdm["results"].get(key) or []))

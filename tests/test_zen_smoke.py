@@ -92,3 +92,22 @@ def test_expression_key_with_dots_nests():
                     "passThrough": True, "inputField": None, "outputPath": None,
                     "executionMode": "single"}}
     assert _decision(model).evaluate({})["result"]["derived"] == {"x": 2}
+
+
+def test_utc_window_is_exact_across_daylight_saving():
+    """day_set_expression() takes the window's dates in UTC. Without a zone, d() takes the
+    machine's zone and add(n, "d") steps 24 hours, so across the end of daylight saving every
+    later day lands on the day before (NOTES.md, JDM item 15). These must hold on any machine."""
+    from datetime import date, timedelta
+
+    from reg_to_jdm.jdm import day_set_expression
+
+    window = {"from": "a", "to": "b", "pad_days": 10}
+    expr = day_set_expression(window, "true")
+    for a, b in (("2026-10-14", "2026-10-19"),   # EU and Israel leave summer time 2026-10-25
+                 ("2026-10-28", "2026-11-02"),   # the US leaves it 2026-11-01
+                 ("2026-03-20", "2026-03-30")):  # EU starts it 2026-03-29
+        days = zen.evaluate_expression(expr, {"a": a, "b": b})
+        start = date.fromisoformat(a) - timedelta(days=10)
+        n = (date.fromisoformat(b) - date.fromisoformat(a)).days + 21
+        assert days == [(start + timedelta(days=i)).isoformat() for i in range(n)], (a, b)
