@@ -1,0 +1,9 @@
+# 12 CFR 1026.19(f)(1)(i) through (iii), Regulation Z (Truth in Lending).
+# Copied from the eCFR, https://www.ecfr.gov/current/title-12/part-1026/section-1026.19#p-1026.19(f)(1)
+# eCFR point in time: 2026-10-05 (versioner API, title 12 up to date as of 2026-10-05).
+# One paragraph per line: [paragraph label] then the paragraph text. Italic headings are written _Heading._
+# Parent headings, not repeated on the lines: (f) _Mortgage loans—final disclosures_, (1) _Provision of disclosures_, (ii) _Timing_.
+[1026.19(f)(1)(i)] _Scope._ In a transaction subject to paragraph (e)(1)(i) of this section, the creditor shall provide the consumer with the disclosures required under § 1026.38 reflecting the actual terms of the transaction.
+[1026.19(f)(1)(ii)(A)] _In general._ Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i), (f)(2)(iii), (f)(2)(iv), and (f)(2)(v) of this section, the creditor shall ensure that the consumer receives the disclosures required under paragraph (f)(1)(i) of this section no later than three business days before consummation.
+[1026.19(f)(1)(ii)(B)] _Timeshares._ For transactions secured by a consumer's interest in a timeshare plan described in 11 U.S.C. 101(53D), the creditor shall ensure that the consumer receives the disclosures required under paragraph (f)(1)(i) of this section no later than consummation.
+[1026.19(f)(1)(iii)] _Receipt of disclosures._ If any disclosures required under paragraph (f)(1)(i) of this section are not provided to the consumer in person, the consumer is considered to have received the disclosures three business days after they are delivered or placed in the mail.

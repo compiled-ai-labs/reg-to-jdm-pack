@@ -1,0 +1,81 @@
+# reg-to-jdm-pack
+
+A compiled rule pack for GoRules, with its receipts, tests and verifier.
+
+## What is in this repo
+
+The pack, in `out/pack/`:
+
+| File | Content |
+| - | - |
+| `rules.jdm.json` | The decision model in the GoRules JDM format. One expression node per derived value, one decision table per source paragraph; rows carry the rule id in `_id` and in a `rule_id` output column. Format: [docs/jdm-target.md](docs/jdm-target.md). |
+| `receipts.json` | Rule id to sentence id, quote, source file and its SHA-256. |
+| `questions.yaml` | Open questions with their readings, and rules blocked by them. Empty: this pack is final. |
+| `answers.yaml` | The decisions taken on the questions, with who answered. |
+| `tests/` | One JSON per test case: input, expected output, rule id, note. Every rule has a passing and a failing case. |
+| `readback.md` | Each row in plain English next to its source sentence. |
+| `changes.json` | Rule ids added, changed and retired against the first pass. |
+
+Next to it: the source text in `sources/`, the vocabulary in `vocab/`, the hand-written test loans in `fixtures/` (their results are the `fixture-*.json` cases in `out/pack/tests/`), the verifier and the readback renderer in `src/reg_to_jdm/`.
+
+Every claim in the pack can be checked here. `verify` loads the JDM into the ZEN engine, runs the sixteen test cases, compares every quote with the eCFR text in `sources/` character for character, checks every number in a rule against its quote and every field and function against the vocabulary. `readback` renders the plain-English readback again from the JDM and the receipts.
+
+## What is not in this repo
+
+The compiler that produced the pack. It reads the text sentence by sentence and asks a model to write each sentence as a rule, a link, a question or not a rule. It checks each record with gates, feeds failures back to the model, and stops with a question when a sentence cannot be written without guessing. `validator.py` here holds the gates that run on the finished pack. The compiler is not published. The open questions of the first pass in [examples/trid-19f-first-pass/](examples/trid-19f-first-pass/questions.yaml) and the answers in `out/pack/answers.yaml` show what it produces.
+
+## The worked example
+
+12 CFR 1026.19(f)(1)(i) to (iii), the Closing Disclosure timing rule, with the definition of business day from 1026.2(a)(6), copied from the eCFR as of 2026-10-05. The test loans:
+
+| Loan | Expected |
+| - | - |
+| Closing Disclosure received Friday 2026-10-16, consummation Monday 2026-10-19 | fail |
+| Mailed Tuesday 2026-10-20, consummation Thursday 2026-10-22 | fail |
+| Received Thursday 2026-10-15, consummation Monday 2026-10-19 (Saturday is a business day under 1026.19(f)) | pass |
+| Received Saturday 2026-10-10, consummation Wednesday 2026-10-14, Columbus Day in between | fail |
+| Timeshare, received Friday, consummation Monday, under 1026.19(f)(1)(ii)(B) | pass |
+
+The GoRules expression language has no business-day or holiday function. The first pass raised that as a question on 1026.2(a)(6), with two others: the scope references of (f)(1)(i) and the (f)(2) exceptions of (f)(1)(ii)(A). All three were answered (see `answers.yaml`). The loan file now carries `calendar.holidays`, and business days are computed from it with documented functions only.
+
+## Run it
+
+```bash
+uv sync
+uv run reg-to-jdm verify --final
+uv run reg-to-jdm readback
+uv run pytest
+```
+
+Load the JDM into zen-engine:
+
+```python
+import json, zen
+decision = zen.ZenEngine().create_decision(open("out/pack/rules.jdm.json").read())
+print(decision.evaluate(json.load(open("out/pack/tests/fixture-cd-received-friday-closing-monday.json"))["input"])["result"]["results"])
+```
+
+## Using this pack
+
+The pack is Apache 2.0. Load it into any GoRules SDK or editor, add test cases to `out/pack/tests/` in the same format (`verify` runs every file there), and supply your own holiday list with each loan file in `calendar.holidays`. A rule changed by hand no longer matches its receipt, and `verify` reports it.
+
+Known limits:
+
+- The exceptions in 1026.19(f)(2)(i), (iii), (iv) and (v) are out of scope. The verdict is wrong for a loan file to which one of them applies.
+- Coverage under 1026.19(e)(1)(i) and the content of the Closing Disclosure (1026.38) are not checked.
+- For mailed and electronic delivery the three-business-day presumption of (f)(1)(iii) is applied even when the file records an earlier receipt.
+- Business days are listed over a window from the issue date minus 10 days to consummation plus 10 days. The window is code, not text, and has no receipt.
+- `closing_date` must be the date of consummation.
+
+## Services
+
+I compile other texts and build packs for other rule engines: see [SERVICES.md](SERVICES.md).
+Contact: boristep@gmail.com.
+
+## Background
+
+The pack was built with the Compiled AI pattern: a model writes the artifact at compile time, gates decide whether it is written, and a deterministic runtime executes it with no model in the path ([Compiled AI: Engineering Deterministic LLM Systems](https://medium.com/itnext/compiled-ai-engineering-deterministic-llm-systems-f911558764d4)).
+
+## License
+
+Apache 2.0. The regulation text in `sources/` comes from the eCFR and is in the public domain.

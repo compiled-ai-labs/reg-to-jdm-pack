@@ -1,0 +1,178 @@
+{
+  "links": [
+    {
+      "cited_as": "paragraph (e)(1)(i)",
+      "kind": "external",
+      "quote": "In a transaction subject to paragraph (e)(1)(i) of this section",
+      "sentence_id": "1026.19(f)(1)(i)",
+      "target": "1026.19(e)(1)(i)"
+    },
+    {
+      "cited_as": "§ 1026.38",
+      "kind": "external",
+      "quote": "the disclosures required under § 1026.38",
+      "sentence_id": "1026.19(f)(1)(i)",
+      "target": "1026.38"
+    },
+    {
+      "cited_as": "(f)(1)(ii)(B)",
+      "kind": "exception",
+      "quote": "Except as provided in paragraphs (f)(1)(ii)(B)",
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "target": "1026.19(f)(1)(ii)(B)"
+    },
+    {
+      "cited_as": "(f)(2)(i)",
+      "kind": "external",
+      "quote": "Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i)",
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "target": "1026.19(f)(2)(i)"
+    },
+    {
+      "cited_as": "(f)(2)(iii)",
+      "kind": "external",
+      "quote": "(f)(2)(iii), (f)(2)(iv), and (f)(2)(v) of this section",
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "target": "1026.19(f)(2)(iii)"
+    },
+    {
+      "cited_as": "(f)(2)(iv)",
+      "kind": "external",
+      "quote": "(f)(2)(iii), (f)(2)(iv), and (f)(2)(v) of this section",
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "target": "1026.19(f)(2)(iv)"
+    },
+    {
+      "cited_as": "(f)(2)(v)",
+      "kind": "external",
+      "quote": "(f)(2)(iii), (f)(2)(iv), and (f)(2)(v) of this section",
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "target": "1026.19(f)(2)(v)"
+    },
+    {
+      "cited_as": "paragraph (f)(1)(i)",
+      "kind": "reference",
+      "quote": "the disclosures required under paragraph (f)(1)(i) of this section",
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "target": "1026.19(f)(1)(i)"
+    },
+    {
+      "cited_as": "paragraph (f)(1)(i)",
+      "kind": "reference",
+      "quote": "the disclosures required under paragraph (f)(1)(i) of this section",
+      "sentence_id": "1026.19(f)(1)(ii)(B)",
+      "target": "1026.19(f)(1)(i)"
+    },
+    {
+      "cited_as": "11 U.S.C. 101(53D)",
+      "kind": "external",
+      "quote": "a timeshare plan described in 11 U.S.C. 101(53D)",
+      "sentence_id": "1026.19(f)(1)(ii)(B)",
+      "target": "11 U.S.C. 101(53D)"
+    },
+    {
+      "cited_as": "paragraph (f)(1)(i)",
+      "kind": "reference",
+      "quote": "If any disclosures required under paragraph (f)(1)(i) of this section",
+      "sentence_id": "1026.19(f)(1)(iii)",
+      "target": "1026.19(f)(1)(i)"
+    }
+  ],
+  "model": {
+    "name": "claude-opus-5-5",
+    "provider": "chat"
+  },
+  "prompt_template_sha256": "fb4f40364bc85943c9a923067bab0d16288c3915761eeee53609c175c6363c92",
+  "rules": {
+    "1026.19(f)(1)(ii)(A)/r1": {
+      "applies_when": "not transaction.timeshare",
+      "content_sha256": "957c6c78cb8adcd2639fcda21ce935a9eaba46ed86bb3322a78386d91c1c17e6",
+      "kind": "rule",
+      "node": "table-s1026_19_f_1_ii_A",
+      "quote": "Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i), (f)(2)(iii), (f)(2)(iv), and (f)(2)(v) of this section, the creditor shall ensure that the consumer receives the disclosures required under paragraph (f)(1)(i) of this section no later than three business days before consummation",
+      "requirement": "count(derived.business_days as day, d(day) >= d(derived.cd_receipt_date) and d(day) < d(closing_date)) >= 3",
+      "rows": [
+        "1026.19(f)(1)(ii)(A)/r1/pass",
+        "1026.19(f)(1)(ii)(A)/r1/fail"
+      ],
+      "sentence_id": "1026.19(f)(1)(ii)(A)",
+      "source": "sources/trid-1026-19f.txt",
+      "source_sha256": "7473caf901a33af859dab078281e9c24aea4693bd3ed1075aa51ad1e39a76255"
+    },
+    "1026.19(f)(1)(ii)(B)/r1": {
+      "applies_when": "transaction.timeshare",
+      "content_sha256": "6e5f91cb48e96a01002ed9b89a6bbfef2f79564ab0b98ff8fe060b27d3803539",
+      "kind": "rule",
+      "node": "table-s1026_19_f_1_ii_B",
+      "quote": "For transactions secured by a consumer's interest in a timeshare plan described in 11 U.S.C. 101(53D), the creditor shall ensure that the consumer receives the disclosures required under paragraph (f)(1)(i) of this section no later than consummation",
+      "requirement": "d(derived.cd_receipt_date) <= d(closing_date)",
+      "rows": [
+        "1026.19(f)(1)(ii)(B)/r1/pass",
+        "1026.19(f)(1)(ii)(B)/r1/fail"
+      ],
+      "sentence_id": "1026.19(f)(1)(ii)(B)",
+      "source": "sources/trid-1026-19f.txt",
+      "source_sha256": "7473caf901a33af859dab078281e9c24aea4693bd3ed1075aa51ad1e39a76255"
+    },
+    "1026.19(f)(1)(iii)/d1": {
+      "content_sha256": "39787ee19ec9afeeed496c6e97681a6eed1bb7b0f68e308817177282975ca4ae",
+      "expression": "cd.delivery_method == \"in_person\" ? cd.received_date : filter(derived.business_days as day, d(day) > d(cd.mailed_date))[2]",
+      "field": "derived.cd_receipt_date",
+      "kind": "derived_field",
+      "node": "derive-2",
+      "quote": "If any disclosures required under paragraph (f)(1)(i) of this section are not provided to the consumer in person, the consumer is considered to have received the disclosures three business days after they are delivered or placed in the mail",
+      "sentence_id": "1026.19(f)(1)(iii)",
+      "source": "sources/trid-1026-19f.txt",
+      "source_sha256": "7473caf901a33af859dab078281e9c24aea4693bd3ed1075aa51ad1e39a76255"
+    },
+    "1026.2(a)(6).s2/d1": {
+      "content_sha256": "15b382dcca33c33f12a1a315d48787b5b5eef5547680c47482ea3db8b5b061b9",
+      "expression": "d(#).weekday() != 7 and not contains(calendar.holidays, #)",
+      "field": "derived.business_days",
+      "kind": "derived_field",
+      "node": "derive-1",
+      "quote": "the term means all calendar days except Sundays and the legal public holidays specified in 5 U.S.C. 6103(a)",
+      "sentence_id": "1026.2(a)(6).s2",
+      "source": "sources/reg-z-1026-2-a-6.txt",
+      "source_sha256": "b0593139f40ebba958732fd15c8f368aec3b10fb9b2f3ff7a1b265cb656b518b"
+    }
+  },
+  "sentences": {
+    "1026.19(f)(1)(i)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "LINK"
+    },
+    "1026.19(f)(1)(ii)(A)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "RULE"
+    },
+    "1026.19(f)(1)(ii)(B)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "RULE"
+    },
+    "1026.19(f)(1)(iii)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "RULE"
+    },
+    "1026.2(a)(6)": {
+      "source": "sources/reg-z-1026-2-a-6.txt",
+      "state": "NOT_A_RULE"
+    },
+    "1026.2(a)(6).s2": {
+      "source": "sources/reg-z-1026-2-a-6.txt",
+      "state": "RULE"
+    }
+  },
+  "sources": {
+    "sources/reg-z-1026-2-a-6.txt": {
+      "sha256": "b0593139f40ebba958732fd15c8f368aec3b10fb9b2f3ff7a1b265cb656b518b"
+    },
+    "sources/trid-1026-19f.txt": {
+      "sha256": "7473caf901a33af859dab078281e9c24aea4693bd3ed1075aa51ad1e39a76255"
+    }
+  },
+  "vocabulary": {
+    "path": "vocab/loan-file.yaml",
+    "sha256": "edf4c9758de5a642e320cae01b00f019b43392f9575daf8ba01128098f7cd6bf"
+  }
+}

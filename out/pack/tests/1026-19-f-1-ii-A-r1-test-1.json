@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "result": "pass"
+  },
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "delivery_method": "in_person",
+      "issue_date": "2026-10-14",
+      "mailed_date": null,
+      "received_date": "2026-10-15"
+    },
+    "closing_date": "2026-10-19",
+    "transaction": {
+      "timeshare": false
+    }
+  },
+  "name": "1026.19(f)(1)(ii)(A)/r1 test 1",
+  "note": "Received Thursday 2026-10-15, consummation Monday 2026-10-19. The three business days before Monday are Saturday, Friday, Thursday; receipt on Thursday is in time.",
+  "origin": "model",
+  "rule_id": "1026.19(f)(1)(ii)(A)/r1"
+}

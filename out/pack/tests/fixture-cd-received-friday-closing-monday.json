@@ -1,0 +1,31 @@
+{
+  "expected": {
+    "result": "fail"
+  },
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12",
+        "2026-11-11",
+        "2026-11-26",
+        "2026-12-25"
+      ]
+    },
+    "cd": {
+      "delivery_method": "in_person",
+      "issue_date": "2026-10-14",
+      "mailed_date": null,
+      "received_date": "2026-10-16"
+    },
+    "closing_date": "2026-10-19",
+    "transaction": {
+      "timeshare": false
+    }
+  },
+  "name": "fixture cd-received-friday-closing-monday",
+  "note": "Closing Disclosure handed over Friday 2026-10-16, consummation Monday 2026-10-19. Business days before Monday: Saturday, Friday, Thursday. Receipt must be no later than Thursday.",
+  "origin": "fixture",
+  "rule_id": "1026.19(f)(1)(ii)(A)/r1",
+  "subsection": "1026.19(f)(1)(ii)(A)",
+  "subsection_key": "s1026_19_f_1_ii_A"
+}

@@ -1,0 +1,24 @@
+{
+  "expected": {
+    "value": "2026-10-15"
+  },
+  "field": "derived.cd_receipt_date",
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "delivery_method": "in_person",
+      "issue_date": "2026-10-14",
+      "mailed_date": null,
+      "received_date": "2026-10-15"
+    },
+    "closing_date": "2026-10-19"
+  },
+  "name": "1026.19(f)(1)(iii)/d1 test 1",
+  "note": "Provided in person on Thursday 2026-10-15: received that day.",
+  "origin": "model",
+  "rule_id": "1026.19(f)(1)(iii)/d1"
+}

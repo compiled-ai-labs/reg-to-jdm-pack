@@ -1,0 +1,76 @@
+# Closed vocabulary for loan-file rules. Human-maintained.
+#
+# A rule may use only the fields, derived fields, functions and methods listed here.
+# Functions and methods must also appear in the GoRules expression language reference
+# (docs/jdm-target.md lists them); `reg-to-jdm verify` checks both.
+#
+# Dates are strings "YYYY-MM-DD". A rule compares dates only through d(...).
+
+fields:
+  cd.issue_date:
+    type: date
+    label: date the Closing Disclosure was issued
+  cd.delivery_method:
+    type: enum
+    label: how the Closing Disclosure was provided
+    values:
+      in_person: handed to the consumer in person
+      mail: placed in the mail
+      electronic: delivered electronically
+  cd.received_date:
+    type: date
+    label: date the consumer received the Closing Disclosure, as recorded in the loan file
+  cd.mailed_date:
+    type: date
+    label: date the Closing Disclosure was delivered other than in person, or placed in the mail
+  closing_date:
+    type: date
+    label: date of consummation
+  transaction.timeshare:
+    type: boolean
+    label: the transaction is secured by a consumer's interest in a timeshare plan
+  note.amount:
+    type: number
+    label: loan amount on the note
+  cd.amount:
+    type: number
+    label: loan amount on the Closing Disclosure
+  ltv:
+    type: number
+    label: loan-to-value ratio, in percent
+  flood_zone:
+    type: string
+    label: FEMA flood zone designation of the property
+  # Added on the answer to question 1026.2(a)(6).s2/q1 (reading a): the caller supplies the
+  # legal public holidays of 5 U.S.C. 6103(a), with the dates on which they are observed.
+  calendar.holidays:
+    type: date_list
+    label: legal public holidays (5 U.S.C. 6103(a)) as observed, supplied with the loan file
+
+# Values the compiled model computes from the fields. A sentence of the source text defines
+# each one, with a receipt. A rule may use a derived field only when some sentence derives it.
+derived:
+  derived.business_days:
+    type: day_set
+    label: business days
+    # Code lists the calendar days of the window; the defining sentence supplies only the test
+    # that decides whether a day counts. The window is a computing device, not regulatory text.
+    window:
+      from: cd.issue_date
+      to: closing_date
+      pad_days: 10
+  derived.cd_receipt_date:
+    type: date
+    label: date the consumer received, or is considered to have received, the Closing Disclosure
+
+# Functions and date methods a rule may call. Business-day arithmetic is not among them:
+# the expression language has no business-day or holiday function.
+functions: [d, count, filter, contains, len]
+methods: [weekday, add, sub, diff, format, isBefore, isAfter, isSame, isSameOrBefore, isSameOrAfter]
+
+# Numbers the expression language needs that a sentence states in words only.
+# A rule may use one only when its word appears in the rule's quote.
+encodings:
+  - value: 7
+    word: Sunday
+    means: Sunday, as d().weekday() numbers the days (1 is Monday, 7 is Sunday)

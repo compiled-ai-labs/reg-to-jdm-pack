@@ -1,0 +1,19 @@
+{
+  "note": "Timeshare: Closing Disclosure handed over Friday 2026-10-16, consummation Monday 2026-10-19. Receipt no later than consummation is enough.",
+  "subsection": "1026.19(f)(1)(ii)(B)",
+  "expected": "pass",
+  "input": {
+    "cd.issue_date": "2026-10-14",
+    "cd.delivery_method": "in_person",
+    "cd.received_date": "2026-10-16",
+    "cd.mailed_date": null,
+    "closing_date": "2026-10-19",
+    "transaction.timeshare": true,
+    "calendar.holidays": [
+      "2026-10-12",
+      "2026-11-11",
+      "2026-11-26",
+      "2026-12-25"
+    ]
+  }
+}

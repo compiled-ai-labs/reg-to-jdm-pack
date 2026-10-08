@@ -1,0 +1,22 @@
+# Runs the pack gates on the committed pack and the unit tests.
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5   # python version comes from .python-version
+      - name: Install
+        run: uv sync --dev
+      - name: Lint
+        run: uv run ruff check .
+      - name: Tests
+        run: uv run pytest
+      - name: Gates on the committed pack
+        run: uv run reg-to-jdm verify --final

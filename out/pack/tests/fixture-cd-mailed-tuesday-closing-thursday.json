@@ -1,0 +1,31 @@
+{
+  "expected": {
+    "result": "fail"
+  },
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12",
+        "2026-11-11",
+        "2026-11-26",
+        "2026-12-25"
+      ]
+    },
+    "cd": {
+      "delivery_method": "mail",
+      "issue_date": "2026-10-20",
+      "mailed_date": "2026-10-20",
+      "received_date": null
+    },
+    "closing_date": "2026-10-22",
+    "transaction": {
+      "timeshare": false
+    }
+  },
+  "name": "fixture cd-mailed-tuesday-closing-thursday",
+  "note": "Closing Disclosure mailed Tuesday 2026-10-20, consummation Thursday 2026-10-22. Considered received three business days after mailing: Friday 2026-10-23, after consummation.",
+  "origin": "fixture",
+  "rule_id": "1026.19(f)(1)(ii)(A)/r1",
+  "subsection": "1026.19(f)(1)(ii)(A)",
+  "subsection_key": "s1026_19_f_1_ii_A"
+}

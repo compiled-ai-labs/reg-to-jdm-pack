@@ -1,0 +1,39 @@
+# The analyst's decisions on the open questions, with who answered.
+answers:
+- question_id: 1026.2(a)(6).s2/q1
+  sentence_id: 1026.2(a)(6).s2
+  issue: derived.business_days needs the dates of the legal public holidays specified in 5 U.S.C. 6103(a).
+    No field holds them, and the sentence names holidays only as examples ("such as") and does not give
+    their dates or the day observed when a holiday falls on a weekend. Sundays alone can be written with
+    the weekday encoding.
+  quote: all calendar days except Sundays and the legal public holidays specified in 5 U.S.C. 6103(a)
+  reading_id: a
+  reading: Add a field with the legal public holiday dates, supplied with the loan file (a list of "YYYY-MM-DD").
+    A day counts when it is not a Sunday and not in that list.
+  note: calendar.holidays is added to the vocabulary. The caller supplies the holidays as observed.
+  answered_by: 'Boris Teplitsky; review : Boris Teplitsky'
+- question_id: 1026.19(f)(1)(i)/q1
+  sentence_id: 1026.19(f)(1)(i)
+  issue: The sentence binds only transactions subject to paragraph (e)(1)(i) and requires the disclosures
+    of § 1026.38. Neither provision is in the text, no field says whether a transaction is covered, and
+    the loan file fields can show at most one of the actual terms (the loan amount).
+  quote: In a transaction subject to paragraph (e)(1)(i) of this section, the creditor shall provide the
+    consumer with the disclosures required under § 1026.38 reflecting the actual terms of the transaction
+  reading_id: a
+  reading: Write no rule. Record (e)(1)(i) and § 1026.38 as external references; the pack assumes every
+    loan file it evaluates is a transaction subject to (e)(1)(i).
+  note: Coverage and the content of the Closing Disclosure are out of scope for this pack.
+  answered_by: 'Boris Teplitsky; review : Boris Teplitsky'
+- question_id: 1026.19(f)(1)(ii)(A)/q1
+  sentence_id: 1026.19(f)(1)(ii)(A)
+  issue: The rule holds except as provided in (f)(2)(i), (f)(2)(iii), (f)(2)(iv) and (f)(2)(v), which
+    are not in the text. They change when the disclosures must be received for loans they cover, and no
+    field says whether one of them applies.
+  quote: Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i), (f)(2)(iii), (f)(2)(iv), and (f)(2)(v)
+    of this section
+  reading_id: a
+  reading: Compile the rule for loan files to which none of (f)(2)(i), (iii), (iv), (v) applies, with
+    (f)(1)(ii)(B) as an exception in the text (not a timeshare), and record the (f)(2) paragraphs as external
+    exceptions.
+  note: The (f)(2) exceptions are out of scope for this pack; receipts list them as external.
+  answered_by: 'Boris Teplitsky; review : Boris Teplitsky'

@@ -1,0 +1,30 @@
+{
+  "expected": {
+    "excludes": [
+      "2026-10-11",
+      "2026-10-12"
+    ],
+    "includes": [
+      "2026-10-09",
+      "2026-10-10",
+      "2026-10-13",
+      "2026-10-14"
+    ]
+  },
+  "field": "derived.business_days",
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "issue_date": "2026-10-09"
+    },
+    "closing_date": "2026-10-14"
+  },
+  "name": "1026.2(a)(6).s2/d1 test 1",
+  "note": "Saturday 2026-10-10 counts; Sunday 2026-10-11 does not; Monday 2026-10-12, Columbus Day, is in the holiday list and does not count.",
+  "origin": "model",
+  "rule_id": "1026.2(a)(6).s2/d1"
+}

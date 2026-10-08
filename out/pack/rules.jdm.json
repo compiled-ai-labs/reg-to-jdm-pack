@@ -1,0 +1,217 @@
+{
+  "edges": [
+    {
+      "id": "edge-1",
+      "sourceHandle": null,
+      "sourceId": "input",
+      "targetId": "derive-1",
+      "type": "edge"
+    },
+    {
+      "id": "edge-2",
+      "sourceHandle": null,
+      "sourceId": "derive-1",
+      "targetId": "derive-2",
+      "type": "edge"
+    },
+    {
+      "id": "edge-3",
+      "sourceHandle": null,
+      "sourceId": "derive-2",
+      "targetId": "table-s1026_19_f_1_ii_A",
+      "type": "edge"
+    },
+    {
+      "id": "edge-4",
+      "sourceHandle": null,
+      "sourceId": "table-s1026_19_f_1_ii_A",
+      "targetId": "table-s1026_19_f_1_ii_B",
+      "type": "edge"
+    },
+    {
+      "id": "edge-5",
+      "sourceHandle": null,
+      "sourceId": "table-s1026_19_f_1_ii_B",
+      "targetId": "output",
+      "type": "edge"
+    }
+  ],
+  "nodes": [
+    {
+      "content": {
+        "schema": ""
+      },
+      "id": "input",
+      "name": "Loan file",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "type": "inputNode"
+    },
+    {
+      "content": {
+        "executionMode": "single",
+        "expressions": [
+          {
+            "id": "e1",
+            "key": "derived.business_days",
+            "value": "filter(map([0..d(closing_date).add(10, \"d\").diff(d(cd.issue_date).sub(10, \"d\"), \"day\")], d(cd.issue_date).sub(10, \"d\").add(#, \"d\").format(\"%Y-%m-%d\")), d(#).weekday() != 7 and not contains(calendar.holidays, #))"
+          }
+        ],
+        "inputField": null,
+        "outputPath": null,
+        "passThrough": true
+      },
+      "id": "derive-1",
+      "name": "1026.2(a)(6).s2 business days",
+      "position": {
+        "x": 280,
+        "y": 0
+      },
+      "type": "expressionNode"
+    },
+    {
+      "content": {
+        "executionMode": "single",
+        "expressions": [
+          {
+            "id": "e1",
+            "key": "derived.cd_receipt_date",
+            "value": "cd.delivery_method == \"in_person\" ? cd.received_date : filter(derived.business_days as day, d(day) > d(cd.mailed_date))[2]"
+          }
+        ],
+        "inputField": null,
+        "outputPath": null,
+        "passThrough": true
+      },
+      "id": "derive-2",
+      "name": "1026.19(f)(1)(iii) date the consumer received, or is considered to have received, the Closing Disclosure",
+      "position": {
+        "x": 560,
+        "y": 0
+      },
+      "type": "expressionNode"
+    },
+    {
+      "content": {
+        "executionMode": "single",
+        "hitPolicy": "collect",
+        "inputField": null,
+        "inputs": [
+          {
+            "id": "i1",
+            "name": "Applies when"
+          },
+          {
+            "id": "i2",
+            "name": "Requirement met"
+          }
+        ],
+        "outputPath": "results.s1026_19_f_1_ii_A",
+        "outputs": [
+          {
+            "field": "rule_id",
+            "id": "o1",
+            "name": "Rule id"
+          },
+          {
+            "field": "result",
+            "id": "o2",
+            "name": "Result"
+          }
+        ],
+        "passThrough": true,
+        "rules": [
+          {
+            "_id": "1026.19(f)(1)(ii)(A)/r1/pass",
+            "i1": "not transaction.timeshare",
+            "i2": "count(derived.business_days as day, d(day) >= d(derived.cd_receipt_date) and d(day) < d(closing_date)) >= 3",
+            "o1": "\"1026.19(f)(1)(ii)(A)/r1\"",
+            "o2": "\"pass\""
+          },
+          {
+            "_id": "1026.19(f)(1)(ii)(A)/r1/fail",
+            "i1": "not transaction.timeshare",
+            "i2": "not (count(derived.business_days as day, d(day) >= d(derived.cd_receipt_date) and d(day) < d(closing_date)) >= 3)",
+            "o1": "\"1026.19(f)(1)(ii)(A)/r1\"",
+            "o2": "\"fail\""
+          }
+        ]
+      },
+      "id": "table-s1026_19_f_1_ii_A",
+      "name": "1026.19(f)(1)(ii)(A) In general",
+      "position": {
+        "x": 840,
+        "y": 0
+      },
+      "type": "decisionTableNode"
+    },
+    {
+      "content": {
+        "executionMode": "single",
+        "hitPolicy": "collect",
+        "inputField": null,
+        "inputs": [
+          {
+            "id": "i1",
+            "name": "Applies when"
+          },
+          {
+            "id": "i2",
+            "name": "Requirement met"
+          }
+        ],
+        "outputPath": "results.s1026_19_f_1_ii_B",
+        "outputs": [
+          {
+            "field": "rule_id",
+            "id": "o1",
+            "name": "Rule id"
+          },
+          {
+            "field": "result",
+            "id": "o2",
+            "name": "Result"
+          }
+        ],
+        "passThrough": true,
+        "rules": [
+          {
+            "_id": "1026.19(f)(1)(ii)(B)/r1/pass",
+            "i1": "transaction.timeshare",
+            "i2": "d(derived.cd_receipt_date) <= d(closing_date)",
+            "o1": "\"1026.19(f)(1)(ii)(B)/r1\"",
+            "o2": "\"pass\""
+          },
+          {
+            "_id": "1026.19(f)(1)(ii)(B)/r1/fail",
+            "i1": "transaction.timeshare",
+            "i2": "not (d(derived.cd_receipt_date) <= d(closing_date))",
+            "o1": "\"1026.19(f)(1)(ii)(B)/r1\"",
+            "o2": "\"fail\""
+          }
+        ]
+      },
+      "id": "table-s1026_19_f_1_ii_B",
+      "name": "1026.19(f)(1)(ii)(B) Timeshares",
+      "position": {
+        "x": 1120,
+        "y": 0
+      },
+      "type": "decisionTableNode"
+    },
+    {
+      "content": {
+        "schema": ""
+      },
+      "id": "output",
+      "name": "Results",
+      "position": {
+        "x": 1400,
+        "y": 0
+      },
+      "type": "outputNode"
+    }
+  ]
+}

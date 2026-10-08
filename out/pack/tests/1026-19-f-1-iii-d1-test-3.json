@@ -1,0 +1,24 @@
+{
+  "expected": {
+    "value": "2026-10-14"
+  },
+  "field": "derived.cd_receipt_date",
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "delivery_method": "electronic",
+      "issue_date": "2026-10-09",
+      "mailed_date": "2026-10-09",
+      "received_date": null
+    },
+    "closing_date": "2026-10-19"
+  },
+  "name": "1026.19(f)(1)(iii)/d1 test 3",
+  "note": "Sent electronically Friday 2026-10-09: Saturday 2026-10-10 counts, Sunday and Columbus Day Monday 2026-10-12 do not, then Tuesday 2026-10-13 and Wednesday 2026-10-14.",
+  "origin": "model",
+  "rule_id": "1026.19(f)(1)(iii)/d1"
+}

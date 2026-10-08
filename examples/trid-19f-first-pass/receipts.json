@@ -1,0 +1,69 @@
+{
+  "links": [
+    {
+      "cited_as": "paragraph (f)(1)(i)",
+      "kind": "reference",
+      "quote": "the disclosures required under paragraph (f)(1)(i) of this section",
+      "sentence_id": "1026.19(f)(1)(ii)(B)",
+      "target": "1026.19(f)(1)(i)"
+    },
+    {
+      "cited_as": "11 U.S.C. 101(53D)",
+      "kind": "external",
+      "quote": "a timeshare plan described in 11 U.S.C. 101(53D)",
+      "sentence_id": "1026.19(f)(1)(ii)(B)",
+      "target": "11 U.S.C. 101(53D)"
+    },
+    {
+      "cited_as": "paragraph (f)(1)(i)",
+      "kind": "reference",
+      "quote": "If any disclosures required under paragraph (f)(1)(i) of this section",
+      "sentence_id": "1026.19(f)(1)(iii)",
+      "target": "1026.19(f)(1)(i)"
+    }
+  ],
+  "model": {
+    "name": "claude-opus-5-5",
+    "provider": "chat"
+  },
+  "prompt_template_sha256": "fb4f40364bc85943c9a923067bab0d16288c3915761eeee53609c175c6363c92",
+  "rules": {},
+  "sentences": {
+    "1026.19(f)(1)(i)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "QUESTION"
+    },
+    "1026.19(f)(1)(ii)(A)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "QUESTION"
+    },
+    "1026.19(f)(1)(ii)(B)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "RULE"
+    },
+    "1026.19(f)(1)(iii)": {
+      "source": "sources/trid-1026-19f.txt",
+      "state": "RULE"
+    },
+    "1026.2(a)(6)": {
+      "source": "sources/reg-z-1026-2-a-6.txt",
+      "state": "NOT_A_RULE"
+    },
+    "1026.2(a)(6).s2": {
+      "source": "sources/reg-z-1026-2-a-6.txt",
+      "state": "QUESTION"
+    }
+  },
+  "sources": {
+    "sources/reg-z-1026-2-a-6.txt": {
+      "sha256": "b0593139f40ebba958732fd15c8f368aec3b10fb9b2f3ff7a1b265cb656b518b"
+    },
+    "sources/trid-1026-19f.txt": {
+      "sha256": "7473caf901a33af859dab078281e9c24aea4693bd3ed1075aa51ad1e39a76255"
+    }
+  },
+  "vocabulary": {
+    "path": "vocab/loan-file.yaml",
+    "sha256": "d1030c7b4d08fb910cf800fe384ef78cc30c41dcf664d3894b1e11e918d3f284"
+  }
+}

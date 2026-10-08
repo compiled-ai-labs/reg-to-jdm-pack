@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "result": "pass"
+  },
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "delivery_method": "in_person",
+      "issue_date": "2026-10-14",
+      "mailed_date": null,
+      "received_date": "2026-10-19"
+    },
+    "closing_date": "2026-10-19",
+    "transaction": {
+      "timeshare": true
+    }
+  },
+  "name": "1026.19(f)(1)(ii)(B)/r1 test 1",
+  "note": "Timeshare; received in person on the day of consummation, Monday 2026-10-19.",
+  "origin": "model",
+  "rule_id": "1026.19(f)(1)(ii)(B)/r1"
+}

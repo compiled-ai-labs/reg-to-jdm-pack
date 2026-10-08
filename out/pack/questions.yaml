@@ -1,0 +1,6 @@
+# Open questions. Empty when the pack is final.
+# Each question gives the sentence, the issue and the possible readings. Blocked items are rules
+# that wait on an open question. The decisions taken are in answers.yaml.
+questions: []
+blocked: []
+skipped_fixtures: []

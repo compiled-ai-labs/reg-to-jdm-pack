@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "result": "not_applicable"
+  },
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "delivery_method": "in_person",
+      "issue_date": "2026-10-14",
+      "mailed_date": null,
+      "received_date": "2026-10-16"
+    },
+    "closing_date": "2026-10-19",
+    "transaction": {
+      "timeshare": true
+    }
+  },
+  "name": "1026.19(f)(1)(ii)(A)/r1 test 3",
+  "note": "A timeshare: (f)(1)(ii)(B) applies instead.",
+  "origin": "model",
+  "rule_id": "1026.19(f)(1)(ii)(A)/r1"
+}

@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "result": "fail"
+  },
+  "input": {
+    "calendar": {
+      "holidays": [
+        "2026-10-12"
+      ]
+    },
+    "cd": {
+      "delivery_method": "mail",
+      "issue_date": "2026-10-14",
+      "mailed_date": "2026-10-16",
+      "received_date": null
+    },
+    "closing_date": "2026-10-19",
+    "transaction": {
+      "timeshare": true
+    }
+  },
+  "name": "1026.19(f)(1)(ii)(B)/r1 test 2",
+  "note": "Timeshare; mailed Friday 2026-10-16, considered received Tuesday 2026-10-20 (Saturday, Monday, Tuesday), after consummation on Monday 2026-10-19.",
+  "origin": "model",
+  "rule_id": "1026.19(f)(1)(ii)(B)/r1"
+}

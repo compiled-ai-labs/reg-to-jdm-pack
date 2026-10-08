@@ -1,0 +1,98 @@
+# Open questions. Empty when the pack is final.
+# Each question gives the sentence, the issue and the possible readings. Blocked items are rules
+# that wait on an open question. The decisions taken are in answers.yaml.
+questions:
+- id: 1026.2(a)(6).s2/q1
+  sentence_id: 1026.2(a)(6).s2
+  sentence: However, for purposes of rescission under §§ 1026.15 and 1026.23, and for purposes of §§ 1026.19(a)(1)(ii),
+    1026.19(a)(2), 1026.19(e)(1)(iii)(B), 1026.19(e)(1)(iv), 1026.19(e)(2)(i)(A), 1026.19(e)(4)(ii), 1026.19(f)(1)(ii),
+    1026.19(f)(1)(iii), 1026.20(e)(5), 1026.31, and 1026.46(d)(4), the term means all calendar days except
+    Sundays and the legal public holidays specified in 5 U.S.C. 6103(a), such as New Year's Day, the Birthday
+    of Martin Luther King, Jr., Washington's Birthday, Memorial Day, Independence Day, Labor Day, Columbus
+    Day, Veterans Day, Thanksgiving Day, and Christmas Day.
+  issue: derived.business_days needs the dates of the legal public holidays specified in 5 U.S.C. 6103(a).
+    No field holds them, and the sentence names holidays only as examples ("such as") and does not give
+    their dates or the day observed when a holiday falls on a weekend. Sundays alone can be written with
+    the weekday encoding.
+  quote: all calendar days except Sundays and the legal public holidays specified in 5 U.S.C. 6103(a)
+  readings:
+  - id: a
+    reading: Add a field with the legal public holiday dates, supplied with the loan file (a list of "YYYY-MM-DD").
+      A day counts when it is not a Sunday and not in that list.
+    consequence: Needs a vocabulary change. Whoever supplies the loan file maintains the holiday calendar,
+      including observed dates.
+  - id: b
+    reading: Exclude Sundays only.
+    consequence: Counts every legal public holiday as a business day, against the text; a consummation
+      date right after a holiday would pass too early.
+  - id: c
+    reading: Write the holidays the sentence names as fixed calendar rules in the expression.
+    consequence: The list is not exhaustive ("such as"), observed dates are not in the text, and the vocabulary
+      has no functions for nth-weekday dates.
+  answer: null
+  note: null
+- id: 1026.19(f)(1)(i)/q1
+  sentence_id: 1026.19(f)(1)(i)
+  sentence: In a transaction subject to paragraph (e)(1)(i) of this section, the creditor shall provide
+    the consumer with the disclosures required under § 1026.38 reflecting the actual terms of the transaction.
+  issue: The sentence binds only transactions subject to paragraph (e)(1)(i) and requires the disclosures
+    of § 1026.38. Neither provision is in the text, no field says whether a transaction is covered, and
+    the loan file fields can show at most one of the actual terms (the loan amount).
+  quote: In a transaction subject to paragraph (e)(1)(i) of this section, the creditor shall provide the
+    consumer with the disclosures required under § 1026.38 reflecting the actual terms of the transaction
+  readings:
+  - id: a
+    reading: Write no rule. Record (e)(1)(i) and § 1026.38 as external references; the pack assumes every
+      loan file it evaluates is a transaction subject to (e)(1)(i).
+    consequence: The pack does not check the content of the disclosures.
+  - id: b
+    reading: 'Write one rule: cd.amount == note.amount.'
+    consequence: Checks one term of many; the receipt would claim "actual terms" for a check of the loan
+      amount only.
+  - id: c
+    reading: Add 1026.19(e)(1)(i) and § 1026.38 to the sources and compile them.
+    consequence: A much larger text and vocabulary.
+  answer: null
+  note: null
+- id: 1026.19(f)(1)(ii)(A)/q1
+  sentence_id: 1026.19(f)(1)(ii)(A)
+  sentence: Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i), (f)(2)(iii), (f)(2)(iv), and (f)(2)(v)
+    of this section, the creditor shall ensure that the consumer receives the disclosures required under
+    paragraph (f)(1)(i) of this section no later than three business days before consummation.
+  issue: The rule holds except as provided in (f)(2)(i), (f)(2)(iii), (f)(2)(iv) and (f)(2)(v), which
+    are not in the text. They change when the disclosures must be received for loans they cover, and no
+    field says whether one of them applies.
+  quote: Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i), (f)(2)(iii), (f)(2)(iv), and (f)(2)(v)
+    of this section
+  readings:
+  - id: a
+    reading: Compile the rule for loan files to which none of (f)(2)(i), (iii), (iv), (v) applies, with
+      (f)(1)(ii)(B) as an exception in the text (not a timeshare), and record the (f)(2) paragraphs as
+      external exceptions.
+    consequence: The verdict is wrong for a loan file to which one of the (f)(2) exceptions applies; the
+      receipts say so.
+  - id: b
+    reading: Add paragraph (f)(2) to the sources and compile the exceptions.
+    consequence: A larger text, and fields for redisclosure events.
+  answer: null
+  note: null
+blocked:
+- id: 1026.19(f)(1)(ii)(B)/r1
+  sentence_id: 1026.19(f)(1)(ii)(B)
+  reason: uses derived.cd_receipt_date, which no compiled sentence defines while questions are open
+- id: 1026.19(f)(1)(iii)/d1
+  sentence_id: 1026.19(f)(1)(iii)
+  reason: uses derived.business_days, which no compiled sentence defines while questions are open
+skipped_fixtures:
+- fixture: cd-mailed-tuesday-closing-thursday
+  subsection: 1026.19(f)(1)(ii)(A)
+  reason: a sentence of this subsection is open or blocked
+- fixture: cd-received-friday-closing-monday
+  subsection: 1026.19(f)(1)(ii)(A)
+  reason: a sentence of this subsection is open or blocked
+- fixture: cd-received-thursday-closing-monday
+  subsection: 1026.19(f)(1)(ii)(A)
+  reason: a sentence of this subsection is open or blocked
+- fixture: timeshare-received-friday-closing-monday
+  subsection: 1026.19(f)(1)(ii)(B)
+  reason: a sentence of this subsection is open or blocked

@@ -1,0 +1,7 @@
+# Where the source text, the vocabulary and the pack are.
+paths:
+  sources:
+    - sources/reg-z-1026-2-a-6.txt
+    - sources/trid-1026-19f.txt
+  vocabulary: vocab/loan-file.yaml
+  pack: out/pack

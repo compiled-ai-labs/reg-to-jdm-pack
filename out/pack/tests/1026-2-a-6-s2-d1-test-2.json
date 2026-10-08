@@ -1,0 +1,25 @@
+{
+  "expected": {
+    "excludes": [
+      "2026-10-11"
+    ],
+    "includes": [
+      "2026-10-10",
+      "2026-10-12"
+    ]
+  },
+  "field": "derived.business_days",
+  "input": {
+    "calendar": {
+      "holidays": []
+    },
+    "cd": {
+      "issue_date": "2026-10-09"
+    },
+    "closing_date": "2026-10-14"
+  },
+  "name": "1026.2(a)(6).s2/d1 test 2",
+  "note": "With no holiday supplied, Monday 2026-10-12 counts; Sunday 2026-10-11 still does not.",
+  "origin": "model",
+  "rule_id": "1026.2(a)(6).s2/d1"
+}

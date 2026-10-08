@@ -1,0 +1,37 @@
+{
+  "edges": [
+    {
+      "id": "edge-1",
+      "sourceHandle": null,
+      "sourceId": "input",
+      "targetId": "output",
+      "type": "edge"
+    }
+  ],
+  "nodes": [
+    {
+      "content": {
+        "schema": ""
+      },
+      "id": "input",
+      "name": "Loan file",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "type": "inputNode"
+    },
+    {
+      "content": {
+        "schema": ""
+      },
+      "id": "output",
+      "name": "Results",
+      "position": {
+        "x": 280,
+        "y": 0
+      },
+      "type": "outputNode"
+    }
+  ]
+}

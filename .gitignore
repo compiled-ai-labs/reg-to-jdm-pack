@@ -1,0 +1,8 @@
+# out/pack/ is committed.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+.env
