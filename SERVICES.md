@@ -8,7 +8,7 @@ Regulations, agency guides, investor guidelines, internal policy. The output is 
 
 ## Other rule engines
 
-The pack format is engine-neutral; the emitter, the expression gate and the test runner are written per engine. This has been done for GoRules JDM. It can be done for any engine with a documented rule format and expression language: decision-table products, agent platforms with a rules node, mortgage QC and eligibility engines, in-house engines.
+The pack format is engine-neutral; the emitter, the expression gate and the test runner are written per engine. This has been done for GoRules JDM and for DMN 1.3 with FEEL on Camunda 8: this pack ships both, compiled once from the same text, and every test case gives the same verdict in both engines. DMN carries over to other DMN engines, with the differences between FEEL implementations checked engine by engine. It can be done for any engine with a documented rule format and expression language: decision-table products, agent platforms with a rules node, mortgage QC and eligibility engines, in-house engines.
 
 ## Your vocabulary
 
