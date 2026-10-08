@@ -12,6 +12,10 @@ def test_committed_pack_verifies_final():
     assert main(["--config", CONFIG, "verify", "--final"]) == 0
 
 
+def test_committed_pack_verifies_final_in_both_targets(feel_runner):
+    assert main(["--config", CONFIG, "verify", "--final", "--target", "all"]) == 0
+
+
 def test_readback_reproduces_committed_file(tmp_path):
     import shutil
     pack = tmp_path / "pack"

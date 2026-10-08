@@ -38,3 +38,68 @@
 12. `inputNode.content.schema` is documented as an optional JSON Schema string, but not whether the Python engine enforces it. It is left empty.
 13. Loading into the GoRules editor or BRMS: the standard page describes exporting JDM from BRMS, not importing. The pack loads in editor.gorules.io (see Provenance); BRMS import is not tested.
 14. Inputs are nested objects. The docs show nested paths in fields and expressions but do not say that a flat dotted key in the input is stored as a literal key that expressions do not resolve: `{"cd.issue_date": ...}` is not `cd.issue_date`. Confirmed in the web editor on 2026-10-08, where the first expression node returned null; zen-engine 2.1.2 in Python stops with an error in the same node. Fixtures and test cases are nested and reach the engine as written.
+15. ZEN date arithmetic runs in the machine's local time zone (found 2026-10-08 while comparing with the DMN target). `d(x).add(n, "d")` adds n x 24 hours, and `d()` takes the zone of the machine; Windows ignores `TZ`. Across the end of daylight saving inside the day window (2026-10-25 on this machine, +03:00 to +02:00), every later day lands at 23:00 of the day before: the business-day list repeats 2026-10-25 and loses the last day(s) of the window. For a closing on 2026-10-19 it ends at 2026-10-27, not 2026-10-29. Every verdict of the pack is still right, for two reasons that are luck: the repeated day is a Sunday, which the day test removes, and the window has 10 days of padding past consummation. In a zone that leaves daylight saving on a day that counts as a business day, a business day would be counted twice. On a UTC machine (CI) the list is exact. Not fixed in this pack yet: the window has to be built from UTC dates, which changes `rules.jdm.json`. `tests/test_targets_agree.py` allows the ZEN list to fall short at the window's end and nowhere else, and requires the DMN list to be the exact calendar window.
+
+## DMN target
+
+Added 2026-10-08: `out/pack/rules.dmn`, DMN 1.3 for Camunda 8, compiled from the same sources, vocabulary and answers as the JDM, with the same test cases. New here: `dmn.py` (structure check), `feelexpr.py` (FEEL parser, gate, readback), `feel.py` and `runner/` (the FEEL engine), `verify --target jdm|dmn|all`, the DMN section of `readback.md`, `dmn` entries in `receipts.json`. `rules.jdm.json` and `tests/` are unchanged. Format: `docs/dmn-target.md`.
+
+### FEEL engine
+
+Camunda's DMN engine, dmn-scala (`org.camunda.bpm.extension.dmn.scala:dmn-engine` 1.11.3), with Camunda's FEEL engine, feel-scala (`org.camunda.feel:feel-engine` 1.21.1), on Java 21 (Temurin 21.0.12 here). `runner/` is a small Java program speaking JSON lines; Maven builds it into one jar.
+
+Why: Camunda 8 (Zeebe) deploys and evaluates DMN with exactly this pair. The versions are the ones `camunda/camunda` pins on `stable/8.9` (`parent/pom.xml`: `version.dmn-scala` 1.11.3, `version.feel-scala` 1.21.1), and the c8run 8.9.23 download ships `dmn-engine-1.11.3.jar` and `feel-engine-1.21.1.jar`. The runner builds the engine as Zeebe's `DmnScalaDecisionEngine` does (`new DmnEngine.Builder().build()`). dmn-scala parses the file with the Camunda DMN model API, which validates against the DMN 1.3 XSD, so loading the file is also the schema check. The other candidates are further from Camunda 8. feel-scala is Camunda's own engine; Red Hat's DMN engine (KIE/Drools) is a separate implementation with its own FEEL. No Python FEEL implementation tracks Camunda's. `tests/test_feel_smoke.py` pins the versions, loads `pricing.dmn` from the Camunda docs repository (`.sdk-repos/orchestration-cluster-api-php/examples/resources/`, unchanged in `tests/data/`), evaluates it, and pins every engine behaviour below.
+
+### Where DMN and JDM model the same rule differently
+
+1. Lists: ZEN indexes from 0 and FEEL from 1. `filter(...)[2]` becomes `[...][3]`. The number gate reads FEEL `[3]` as "third", and the quote says "three business days", in both.
+2. Weekdays: ZEN `weekday()` is a number (7 is Sunday) and needs the encoding; FEEL `day of week()` is the name. The gate requires the encoding's word in the quote in both targets.
+3. Conditional: `c ? a : b` becomes `if c then a else b`. Equality: `==` becomes `=`. Negation: `not x` becomes `not(x)`.
+4. Filters: ZEN names the element (`as day`) or uses `#`; FEEL always calls it `item`, so a filter cannot hold another filter. The readback calls `item` "the day", which reads the same as ZEN's `day`.
+5. `contains()`: ZEN has one function for lists and strings. FEEL has `list contains()` and `contains()`, and the vocabulary type decides which.
+6. Derived fields: a JDM expression node writes `derived.cd_receipt_date` into the context. In DMN it is a decision with id `derived_cd_receipt_date`, and FEEL cells use that id. Camunda 8 stores a required decision's result under the decision id, and FEEL names may not contain `.`.
+7. One evaluation: the JDM evaluates every node and returns one object. Camunda evaluates one decision per call, so a `results` decision gathers the tables and derived values into the JDM's output shape.
+8. Cells: JDM table cells are standard expressions. DMN input entries are unary tests, so each table has two inputs whose expression is `true`, and each cell is a boolean expression that matches when it is `true`. A cell whose top level is `not(...)` is put in parentheses (finding 1 below).
+9. Rule ids: the JDM row `_id` is the rule id. A DMN `id` must be an NCName, so it is a slug (`rule_1026_19_f_1_ii_A_r1_pass`), and the rule id goes in the `rule_id` output and in the rule's `description` (JDM rows have no description).
+10. Inputs: JDM has one input node. DMN has one `inputData` per vocabulary field, wired to the decisions that read it. Camunda does not read them; they document the graph.
+11. Day window: the same window and the same test of one day, built as `for i in 0..n return ...` over durations instead of `map([0..n], ...)` over `add(#, "d")`. The FEEL version is exact calendar arithmetic; the ZEN version is not (JDM finding 15).
+12. No match: the COLLECT result is null in DMN. The JDM gives an empty list in Python and leaves the key out in the editor.
+13. Missing input fields: ZEN `d(null)` is an "Invalid date" that still compares, while FEEL `date(null)` is null. Derived values over fields a test does not supply differ: the business-day tests give no delivery method, and ZEN still computes a receipt date. No rule verdict differs. The agreement test compares derived values only where the test supplies their inputs.
+
+### Findings: FEEL, Camunda's engine and the Modeler
+
+1. A leading `not(...)` in an input entry is the unary-tests negation ("the input is not ..."), not the `not()` function. With the input `true`, `not(transaction.timeshare)` matched when `transaction` was missing, so a rule applied where the JDM gives no row. Found by the agreement test on the derived-field test cases. `rules.dmn` puts every such entry in parentheses, which makes it one expression; `verify` checks it (`dmn.input_entry`), and the smoke test pins the behaviour.
+2. feel-scala 1.21.1 records suppressed failures ("No variable found with name 'item'", then failures for each comparison) for a filter whose test is a conjunction (`xs[item > 1 and item < 3]`), and the value is still right. The suppressed failures cannot serve as the cell gate. The DMN cell gate checks that each cell of the rows under test evaluates to a boolean; an error turned into null fails it.
+3. An expression that fails becomes null with a suppressed failure, and does not stop the evaluation. A table cell that fails is a row that silently does not match, the same as in ZEN (JDM finding 10). The cell gate covers both targets.
+4. Five of the nine DMN files in the Camunda docs repository do not load in Camunda's own engine: the hit-policy best-practice assets have empty input expressions or output entries ("The expression ... must not be empty"). The smoke test pins this on `customer-discount.dmn`. The decision-table pages show only fragments, so the full sample came from the SDK examples.
+5. The DMN 1.3 specification names a decision's result by its `variable`, whose name equals the decision's name. Camunda 8 uses the decision id (the decision-table page's id rules, and a Camunda forum answer), so `rules.dmn` relies on ids. An engine that follows the specification would need the decision names to be the variable names.
+6. A FEEL variable name may not contain `.` ("variables" page), so a vocabulary path like `cd.issue_date` cannot be an `inputData` variable. It is a path into the `cd` context. The `inputData` elements carry the path as `name` and have no `variable`.
+7. FEEL negative list indexes count from the end and work on computed lists (ZEN fails; JDM finding 8). The number gate still refuses them: no quote states a position from the end.
+8. The Camunda docs give the hit policy COLLECT result as "in an arbitrary order"; nothing here depends on order.
+9. Camunda Desktop Modeler 5.52.0 (Windows zip, github.com/camunda/camunda-modeler) opens `rules.dmn` as a Camunda 8 diagram. Its workspace records no import messages for the file (`"messages": []` in its `config.json`) and it draws the requirements graph from the DMNDI. On first start the Modeler asks to enable error reports, usage statistics and update checks; all three were declined.
+10. I found no DMN simulator in Desktop Modeler 5.52 (its menus are File, Edit, Window, Help, and the Camunda 8 DMN pages describe modeling only). The evaluation was checked by deploying to Camunda 8 Run instead (below).
+
+### How the DMN was checked
+
+- Engine, on every run of the tests: `verify --final --target all`. It checks the structure, loads into dmn-scala 1.11.3 (XSD and every FEEL expression), matches the receipts against the DMN rules, runs the FEEL gate and the engine parser on every cell, and evaluates all 16 test cases with the cell gate. `tests/test_targets_agree.py` runs every test case in both engines and requires the same rule results, the same scalar derived values, and the same fixture verdicts.
+- Camunda Desktop Modeler 5.52.0 on Windows 11, 2026-10-08: `Camunda Modeler.exe out/pack/rules.dmn`. The file opened with no import messages. The screenshot is of the requirements graph, captured with PrintWindow from a window larger than the screen. The screen was not taking input at the time, so the decision-table view was not captured.
+- Camunda 8 Run 8.9.23 (Windows, H2, no authentication), 2026-10-08: `scripts/camunda_run_check.py` deployed `rules.dmn` through `POST /v2/deployments`. All five decisions deployed, which is Zeebe's own validation. It then evaluated `results` for every test input through `POST /v2/decision-definitions/evaluation`:
+
+| Test | Expected | ZEN (JDM) | dmn-scala (DMN) | Camunda 8.9.23 (DMN) |
+| - | - | - | - | - |
+| 1026-19-f-1-ii-A-r1-test-1 | pass | pass | pass | pass |
+| 1026-19-f-1-ii-A-r1-test-2 | fail | fail | fail | fail |
+| 1026-19-f-1-ii-A-r1-test-3 | not_applicable | not_applicable | not_applicable | not_applicable |
+| 1026-19-f-1-ii-B-r1-test-1 | pass | pass | pass | pass |
+| 1026-19-f-1-ii-B-r1-test-2 | fail | fail | fail | fail |
+| 1026-19-f-1-ii-B-r1-test-3 | not_applicable | not_applicable | not_applicable | not_applicable |
+| 1026-19-f-1-iii-d1-test-1 | 2026-10-15 | 2026-10-15 | 2026-10-15 | 2026-10-15 |
+| 1026-19-f-1-iii-d1-test-2 | 2026-10-23 | 2026-10-23 | 2026-10-23 | 2026-10-23 |
+| 1026-19-f-1-iii-d1-test-3 | 2026-10-14 | 2026-10-14 | 2026-10-14 | 2026-10-14 |
+| 1026-2-a-6-s2-d1-test-1 | includes/excludes | holds | holds | holds |
+| 1026-2-a-6-s2-d1-test-2 | includes/excludes | holds | holds | holds |
+| fixture-cd-mailed-tuesday-closing-thursday | fail | fail | fail | fail |
+| fixture-cd-received-friday-closing-monday | fail | fail | fail | fail |
+| fixture-cd-received-saturday-closing-after-columbus-day | fail | fail | fail | fail |
+| fixture-cd-received-thursday-closing-monday | pass | pass | pass | pass |
+| fixture-timeshare-received-friday-closing-monday | pass | pass | pass | pass |

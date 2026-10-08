@@ -12,11 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5   # python version comes from .python-version
+      - uses: actions/setup-java@v4   # the FEEL engine of the DMN target (runner/)
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build the FEEL runner
+        run: mvn -q -f runner/pom.xml package
       - name: Install
         run: uv sync --dev
       - name: Lint
         run: uv run ruff check .
       - name: Tests
         run: uv run pytest
+        env:
+          REQUIRE_FEEL: '1'   # DMN tests fail instead of skipping without Java
       - name: Gates on the committed pack
-        run: uv run reg-to-jdm verify --final
+        run: uv run reg-to-jdm verify --final --target all

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="reg_to_jdm" name="reg-to-jdm rule pack" namespace="https://github.com/compiled-ai-labs/reg-to-jdm" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <inputData id="input_cd_issue_date" name="cd.issue_date" label="date the Closing Disclosure was issued" />
+  <inputData id="input_cd_delivery_method" name="cd.delivery_method" label="how the Closing Disclosure was provided" />
+  <inputData id="input_cd_received_date" name="cd.received_date" label="date the consumer received the Closing Disclosure, as recorded in the loan file" />
+  <inputData id="input_cd_mailed_date" name="cd.mailed_date" label="date the Closing Disclosure was delivered other than in person, or placed in the mail" />
+  <inputData id="input_closing_date" name="closing_date" label="date of consummation" />
+  <inputData id="input_transaction_timeshare" name="transaction.timeshare" label="the transaction is secured by a consumer's interest in a timeshare plan" />
+  <inputData id="input_note_amount" name="note.amount" label="loan amount on the note" />
+  <inputData id="input_cd_amount" name="cd.amount" label="loan amount on the Closing Disclosure" />
+  <inputData id="input_ltv" name="ltv" label="loan-to-value ratio, in percent" />
+  <inputData id="input_flood_zone" name="flood_zone" label="FEMA flood zone designation of the property" />
+  <inputData id="input_calendar_holidays" name="calendar.holidays" label="legal public holidays (5 U.S.C. 6103(a)) as observed, supplied with the loan file" />
+  <decision id="derived_business_days" name="1026.2(a)(6).s2 business days">
+    <informationRequirement id="derived_business_days_needs_input_cd_issue_date">
+      <requiredInput href="#input_cd_issue_date" />
+    </informationRequirement>
+    <informationRequirement id="derived_business_days_needs_input_closing_date">
+      <requiredInput href="#input_closing_date" />
+    </informationRequirement>
+    <informationRequirement id="derived_business_days_needs_input_calendar_holidays">
+      <requiredInput href="#input_calendar_holidays" />
+    </informationRequirement>
+    <literalExpression id="derived_business_days_expression">
+      <text>(for i in 0..(date(closing_date) + duration("P10D") - (date(cd.issue_date) - duration("P10D"))).days return string(date(cd.issue_date) - duration("P10D") + duration("P1D") * i))[day of week(date(item)) != "Sunday" and not(list contains(calendar.holidays, item))]</text>
+    </literalExpression>
+  </decision>
+  <decision id="derived_cd_receipt_date" name="1026.19(f)(1)(iii) date the consumer received, or is considered to have received, the Closing Disclosure">
+    <informationRequirement id="derived_cd_receipt_date_needs_input_cd_delivery_method">
+      <requiredInput href="#input_cd_delivery_method" />
+    </informationRequirement>
+    <informationRequirement id="derived_cd_receipt_date_needs_input_cd_received_date">
+      <requiredInput href="#input_cd_received_date" />
+    </informationRequirement>
+    <informationRequirement id="derived_cd_receipt_date_needs_input_cd_mailed_date">
+      <requiredInput href="#input_cd_mailed_date" />
+    </informationRequirement>
+    <informationRequirement id="derived_cd_receipt_date_needs_derived_business_days">
+      <requiredDecision href="#derived_business_days" />
+    </informationRequirement>
+    <literalExpression id="derived_cd_receipt_date_expression">
+      <text>if cd.delivery_method = "in_person" then cd.received_date else derived_business_days[date(item) &gt; date(cd.mailed_date)][3]</text>
+    </literalExpression>
+  </decision>
+  <decision id="s1026_19_f_1_ii_A" name="1026.19(f)(1)(ii)(A) In general">
+    <informationRequirement id="s1026_19_f_1_ii_A_needs_input_closing_date">
+      <requiredInput href="#input_closing_date" />
+    </informationRequirement>
+    <informationRequirement id="s1026_19_f_1_ii_A_needs_input_transaction_timeshare">
+      <requiredInput href="#input_transaction_timeshare" />
+    </informationRequirement>
+    <informationRequirement id="s1026_19_f_1_ii_A_needs_derived_business_days">
+      <requiredDecision href="#derived_business_days" />
+    </informationRequirement>
+    <informationRequirement id="s1026_19_f_1_ii_A_needs_derived_cd_receipt_date">
+      <requiredDecision href="#derived_cd_receipt_date" />
+    </informationRequirement>
+    <decisionTable id="s1026_19_f_1_ii_A_table" hitPolicy="COLLECT">
+      <input id="s1026_19_f_1_ii_A_applies" label="Applies when">
+        <inputExpression id="s1026_19_f_1_ii_A_applies_expression" typeRef="boolean">
+          <text>true</text>
+        </inputExpression>
+      </input>
+      <input id="s1026_19_f_1_ii_A_requirement" label="Requirement met">
+        <inputExpression id="s1026_19_f_1_ii_A_requirement_expression" typeRef="boolean">
+          <text>true</text>
+        </inputExpression>
+      </input>
+      <output id="s1026_19_f_1_ii_A_rule_id" name="rule_id" label="Rule id" typeRef="string" />
+      <output id="s1026_19_f_1_ii_A_result" name="result" label="Result" typeRef="string" />
+      <rule id="rule_1026_19_f_1_ii_A_r1_pass">
+        <description>1026.19(f)(1)(ii)(A)/r1/pass</description>
+        <inputEntry id="rule_1026_19_f_1_ii_A_r1_pass_applies">
+          <text>(not(transaction.timeshare))</text>
+        </inputEntry>
+        <inputEntry id="rule_1026_19_f_1_ii_A_r1_pass_requirement">
+          <text>count(derived_business_days[date(item) &gt;= date(derived_cd_receipt_date) and date(item) &lt; date(closing_date)]) &gt;= 3</text>
+        </inputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_A_r1_pass_rule_id">
+          <text>"1026.19(f)(1)(ii)(A)/r1"</text>
+        </outputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_A_r1_pass_result">
+          <text>"pass"</text>
+        </outputEntry>
+      </rule>
+      <rule id="rule_1026_19_f_1_ii_A_r1_fail">
+        <description>1026.19(f)(1)(ii)(A)/r1/fail</description>
+        <inputEntry id="rule_1026_19_f_1_ii_A_r1_fail_applies">
+          <text>(not(transaction.timeshare))</text>
+        </inputEntry>
+        <inputEntry id="rule_1026_19_f_1_ii_A_r1_fail_requirement">
+          <text>(not(count(derived_business_days[date(item) &gt;= date(derived_cd_receipt_date) and date(item) &lt; date(closing_date)]) &gt;= 3))</text>
+        </inputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_A_r1_fail_rule_id">
+          <text>"1026.19(f)(1)(ii)(A)/r1"</text>
+        </outputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_A_r1_fail_result">
+          <text>"fail"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="s1026_19_f_1_ii_B" name="1026.19(f)(1)(ii)(B) Timeshares">
+    <informationRequirement id="s1026_19_f_1_ii_B_needs_input_closing_date">
+      <requiredInput href="#input_closing_date" />
+    </informationRequirement>
+    <informationRequirement id="s1026_19_f_1_ii_B_needs_input_transaction_timeshare">
+      <requiredInput href="#input_transaction_timeshare" />
+    </informationRequirement>
+    <informationRequirement id="s1026_19_f_1_ii_B_needs_derived_cd_receipt_date">
+      <requiredDecision href="#derived_cd_receipt_date" />
+    </informationRequirement>
+    <decisionTable id="s1026_19_f_1_ii_B_table" hitPolicy="COLLECT">
+      <input id="s1026_19_f_1_ii_B_applies" label="Applies when">
+        <inputExpression id="s1026_19_f_1_ii_B_applies_expression" typeRef="boolean">
+          <text>true</text>
+        </inputExpression>
+      </input>
+      <input id="s1026_19_f_1_ii_B_requirement" label="Requirement met">
+        <inputExpression id="s1026_19_f_1_ii_B_requirement_expression" typeRef="boolean">
+          <text>true</text>
+        </inputExpression>
+      </input>
+      <output id="s1026_19_f_1_ii_B_rule_id" name="rule_id" label="Rule id" typeRef="string" />
+      <output id="s1026_19_f_1_ii_B_result" name="result" label="Result" typeRef="string" />
+      <rule id="rule_1026_19_f_1_ii_B_r1_pass">
+        <description>1026.19(f)(1)(ii)(B)/r1/pass</description>
+        <inputEntry id="rule_1026_19_f_1_ii_B_r1_pass_applies">
+          <text>transaction.timeshare</text>
+        </inputEntry>
+        <inputEntry id="rule_1026_19_f_1_ii_B_r1_pass_requirement">
+          <text>date(derived_cd_receipt_date) &lt;= date(closing_date)</text>
+        </inputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_B_r1_pass_rule_id">
+          <text>"1026.19(f)(1)(ii)(B)/r1"</text>
+        </outputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_B_r1_pass_result">
+          <text>"pass"</text>
+        </outputEntry>
+      </rule>
+      <rule id="rule_1026_19_f_1_ii_B_r1_fail">
+        <description>1026.19(f)(1)(ii)(B)/r1/fail</description>
+        <inputEntry id="rule_1026_19_f_1_ii_B_r1_fail_applies">
+          <text>transaction.timeshare</text>
+        </inputEntry>
+        <inputEntry id="rule_1026_19_f_1_ii_B_r1_fail_requirement">
+          <text>(not(date(derived_cd_receipt_date) &lt;= date(closing_date)))</text>
+        </inputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_B_r1_fail_rule_id">
+          <text>"1026.19(f)(1)(ii)(B)/r1"</text>
+        </outputEntry>
+        <outputEntry id="rule_1026_19_f_1_ii_B_r1_fail_result">
+          <text>"fail"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="results" name="Results">
+    <informationRequirement id="results_needs_s1026_19_f_1_ii_A">
+      <requiredDecision href="#s1026_19_f_1_ii_A" />
+    </informationRequirement>
+    <informationRequirement id="results_needs_s1026_19_f_1_ii_B">
+      <requiredDecision href="#s1026_19_f_1_ii_B" />
+    </informationRequirement>
+    <informationRequirement id="results_needs_derived_business_days">
+      <requiredDecision href="#derived_business_days" />
+    </informationRequirement>
+    <informationRequirement id="results_needs_derived_cd_receipt_date">
+      <requiredDecision href="#derived_cd_receipt_date" />
+    </informationRequirement>
+    <literalExpression id="results_expression">
+      <text>{results: {s1026_19_f_1_ii_A: s1026_19_f_1_ii_A, s1026_19_f_1_ii_B: s1026_19_f_1_ii_B}, derived: {business_days: derived_business_days, cd_receipt_date: derived_cd_receipt_date}}</text>
+    </literalExpression>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="diagram">
+      <dmndi:DMNShape id="shape_input_cd_issue_date" dmnElementRef="input_cd_issue_date">
+        <dc:Bounds x="160" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_closing_date" dmnElementRef="input_closing_date">
+        <dc:Bounds x="350" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_calendar_holidays" dmnElementRef="input_calendar_holidays">
+        <dc:Bounds x="540" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_cd_delivery_method" dmnElementRef="input_cd_delivery_method">
+        <dc:Bounds x="730" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_cd_received_date" dmnElementRef="input_cd_received_date">
+        <dc:Bounds x="920" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_cd_mailed_date" dmnElementRef="input_cd_mailed_date">
+        <dc:Bounds x="1110" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_transaction_timeshare" dmnElementRef="input_transaction_timeshare">
+        <dc:Bounds x="1300" y="560" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_note_amount" dmnElementRef="input_note_amount">
+        <dc:Bounds x="160" y="680" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_cd_amount" dmnElementRef="input_cd_amount">
+        <dc:Bounds x="350" y="680" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_ltv" dmnElementRef="input_ltv">
+        <dc:Bounds x="540" y="680" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_input_flood_zone" dmnElementRef="input_flood_zone">
+        <dc:Bounds x="730" y="680" width="170" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_derived_business_days" dmnElementRef="derived_business_days">
+        <dc:Bounds x="300" y="380" width="240" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_derived_cd_receipt_date" dmnElementRef="derived_cd_receipt_date">
+        <dc:Bounds x="720" y="380" width="240" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_s1026_19_f_1_ii_A" dmnElementRef="s1026_19_f_1_ii_A">
+        <dc:Bounds x="160" y="200" width="240" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_s1026_19_f_1_ii_B" dmnElementRef="s1026_19_f_1_ii_B">
+        <dc:Bounds x="580" y="200" width="240" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="shape_results" dmnElementRef="results">
+        <dc:Bounds x="440" y="20" width="200" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="edge_derived_business_days_needs_input_cd_issue_date" dmnElementRef="derived_business_days_needs_input_cd_issue_date">
+        <di:waypoint x="245" y="560" />
+        <di:waypoint x="420" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_derived_business_days_needs_input_closing_date" dmnElementRef="derived_business_days_needs_input_closing_date">
+        <di:waypoint x="435" y="560" />
+        <di:waypoint x="420" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_derived_business_days_needs_input_calendar_holidays" dmnElementRef="derived_business_days_needs_input_calendar_holidays">
+        <di:waypoint x="625" y="560" />
+        <di:waypoint x="420" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_derived_cd_receipt_date_needs_input_cd_delivery_method" dmnElementRef="derived_cd_receipt_date_needs_input_cd_delivery_method">
+        <di:waypoint x="815" y="560" />
+        <di:waypoint x="840" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_derived_cd_receipt_date_needs_input_cd_received_date" dmnElementRef="derived_cd_receipt_date_needs_input_cd_received_date">
+        <di:waypoint x="1005" y="560" />
+        <di:waypoint x="840" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_derived_cd_receipt_date_needs_input_cd_mailed_date" dmnElementRef="derived_cd_receipt_date_needs_input_cd_mailed_date">
+        <di:waypoint x="1195" y="560" />
+        <di:waypoint x="840" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_derived_cd_receipt_date_needs_derived_business_days" dmnElementRef="derived_cd_receipt_date_needs_derived_business_days">
+        <di:waypoint x="420" y="380" />
+        <di:waypoint x="840" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_A_needs_input_closing_date" dmnElementRef="s1026_19_f_1_ii_A_needs_input_closing_date">
+        <di:waypoint x="435" y="560" />
+        <di:waypoint x="280" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_A_needs_input_transaction_timeshare" dmnElementRef="s1026_19_f_1_ii_A_needs_input_transaction_timeshare">
+        <di:waypoint x="1385" y="560" />
+        <di:waypoint x="280" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_A_needs_derived_business_days" dmnElementRef="s1026_19_f_1_ii_A_needs_derived_business_days">
+        <di:waypoint x="420" y="380" />
+        <di:waypoint x="280" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_A_needs_derived_cd_receipt_date" dmnElementRef="s1026_19_f_1_ii_A_needs_derived_cd_receipt_date">
+        <di:waypoint x="840" y="380" />
+        <di:waypoint x="280" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_B_needs_input_closing_date" dmnElementRef="s1026_19_f_1_ii_B_needs_input_closing_date">
+        <di:waypoint x="435" y="560" />
+        <di:waypoint x="700" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_B_needs_input_transaction_timeshare" dmnElementRef="s1026_19_f_1_ii_B_needs_input_transaction_timeshare">
+        <di:waypoint x="1385" y="560" />
+        <di:waypoint x="700" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_s1026_19_f_1_ii_B_needs_derived_cd_receipt_date" dmnElementRef="s1026_19_f_1_ii_B_needs_derived_cd_receipt_date">
+        <di:waypoint x="840" y="380" />
+        <di:waypoint x="700" y="280" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_results_needs_s1026_19_f_1_ii_A" dmnElementRef="results_needs_s1026_19_f_1_ii_A">
+        <di:waypoint x="280" y="200" />
+        <di:waypoint x="540" y="100" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_results_needs_s1026_19_f_1_ii_B" dmnElementRef="results_needs_s1026_19_f_1_ii_B">
+        <di:waypoint x="700" y="200" />
+        <di:waypoint x="540" y="100" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_results_needs_derived_business_days" dmnElementRef="results_needs_derived_business_days">
+        <di:waypoint x="420" y="380" />
+        <di:waypoint x="540" y="100" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="edge_results_needs_derived_cd_receipt_date" dmnElementRef="results_needs_derived_cd_receipt_date">
+        <di:waypoint x="840" y="380" />
+        <di:waypoint x="540" y="100" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

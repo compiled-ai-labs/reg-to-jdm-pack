@@ -1,7 +1,7 @@
 [project]
 name = "reg-to-jdm-pack"
 version = "0.1.0"
-description = "A compiled rule pack for GoRules, with its receipts, tests and verifier"
+description = "A compiled rule pack for GoRules (JDM) and Camunda (DMN), with its receipts, tests and verifier"
 readme = "README.md"
 license = "Apache-2.0"
 authors = [

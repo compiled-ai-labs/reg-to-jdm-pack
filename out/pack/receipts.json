@@ -87,6 +87,15 @@
     "1026.19(f)(1)(ii)(A)/r1": {
       "applies_when": "not transaction.timeshare",
       "content_sha256": "957c6c78cb8adcd2639fcda21ce935a9eaba46ed86bb3322a78386d91c1c17e6",
+      "dmn": {
+        "applies_when": "not(transaction.timeshare)",
+        "decision": "s1026_19_f_1_ii_A",
+        "requirement": "count(derived_business_days[date(item) >= date(derived_cd_receipt_date) and date(item) < date(closing_date)]) >= 3",
+        "rules": [
+          "rule_1026_19_f_1_ii_A_r1_pass",
+          "rule_1026_19_f_1_ii_A_r1_fail"
+        ]
+      },
       "kind": "rule",
       "node": "table-s1026_19_f_1_ii_A",
       "quote": "Except as provided in paragraphs (f)(1)(ii)(B), (f)(2)(i), (f)(2)(iii), (f)(2)(iv), and (f)(2)(v) of this section, the creditor shall ensure that the consumer receives the disclosures required under paragraph (f)(1)(i) of this section no later than three business days before consummation",
@@ -102,6 +111,15 @@
     "1026.19(f)(1)(ii)(B)/r1": {
       "applies_when": "transaction.timeshare",
       "content_sha256": "6e5f91cb48e96a01002ed9b89a6bbfef2f79564ab0b98ff8fe060b27d3803539",
+      "dmn": {
+        "applies_when": "transaction.timeshare",
+        "decision": "s1026_19_f_1_ii_B",
+        "requirement": "date(derived_cd_receipt_date) <= date(closing_date)",
+        "rules": [
+          "rule_1026_19_f_1_ii_B_r1_pass",
+          "rule_1026_19_f_1_ii_B_r1_fail"
+        ]
+      },
       "kind": "rule",
       "node": "table-s1026_19_f_1_ii_B",
       "quote": "For transactions secured by a consumer's interest in a timeshare plan described in 11 U.S.C. 101(53D), the creditor shall ensure that the consumer receives the disclosures required under paragraph (f)(1)(i) of this section no later than consummation",
@@ -116,6 +134,10 @@
     },
     "1026.19(f)(1)(iii)/d1": {
       "content_sha256": "39787ee19ec9afeeed496c6e97681a6eed1bb7b0f68e308817177282975ca4ae",
+      "dmn": {
+        "decision": "derived_cd_receipt_date",
+        "expression": "if cd.delivery_method = \"in_person\" then cd.received_date else derived_business_days[date(item) > date(cd.mailed_date)][3]"
+      },
       "expression": "cd.delivery_method == \"in_person\" ? cd.received_date : filter(derived.business_days as day, d(day) > d(cd.mailed_date))[2]",
       "field": "derived.cd_receipt_date",
       "kind": "derived_field",
@@ -127,6 +149,10 @@
     },
     "1026.2(a)(6).s2/d1": {
       "content_sha256": "15b382dcca33c33f12a1a315d48787b5b5eef5547680c47482ea3db8b5b061b9",
+      "dmn": {
+        "decision": "derived_business_days",
+        "expression": "day of week(date(item)) != \"Sunday\" and not(list contains(calendar.holidays, item))"
+      },
       "expression": "d(#).weekday() != 7 and not contains(calendar.holidays, #)",
       "field": "derived.business_days",
       "kind": "derived_field",
