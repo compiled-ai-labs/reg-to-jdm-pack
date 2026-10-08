@@ -20,7 +20,7 @@ Working with your analysts on the readings, or doing a first pass from domain kn
 
 ## Updates
 
-When the source changes, the pack is compiled again against the previous one. Earlier decisions carry forward, and the change list shows which rules were added, changed or retired.
+When the source changes, only the edited sentences and the other sentences of their paragraph are compiled again. Earlier decisions carry forward, and the change list shows which rules were added, changed or retired.
 
 ## What I do not do
 
